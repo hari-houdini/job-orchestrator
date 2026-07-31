@@ -1,0 +1,21 @@
+{
+  "name": "job-orchestrator",
+  "private": true,
+  "workspaces": [
+    "app",
+    "lib",
+    "pipeline"
+  ],
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.4"
+  },
+  "overrides": {
+    "postcss": "8.5.19",
+    "sharp": "0.35.3"
+  }
+}

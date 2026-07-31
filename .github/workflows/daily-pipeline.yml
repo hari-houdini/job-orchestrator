@@ -1,0 +1,40 @@
+name: Daily job-search pipeline
+
+on:
+  schedule:
+    # 06:00 UTC year-round -> 06:00 UK time in winter (GMT), ~07:00 in summer (BST).
+    # GH Actions cron doesn't shift for daylight saving; this is an accepted
+    # ~1hr drift, still well before the evening application session.
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx --workspace=@job-orchestrator/pipeline playwright install --with-deps chromium
+
+      # TODO(build step: wire up GH Actions workflow): replace with the real
+      # entrypoint once Scout/Biographer/Dispatcher/Gmail-sync are implemented.
+      - name: Run pipeline
+        run: npm run run --workspace=@job-orchestrator/pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_PIPELINE }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          GMAIL_OAUTH_CLIENT_ID: ${{ secrets.GMAIL_OAUTH_CLIENT_ID }}
+          GMAIL_OAUTH_CLIENT_SECRET: ${{ secrets.GMAIL_OAUTH_CLIENT_SECRET }}
+          GMAIL_OAUTH_REFRESH_TOKEN: ${{ secrets.GMAIL_OAUTH_REFRESH_TOKEN }}

@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# next.js
+/app/.next/
+/app/out/
+next-env.d.ts
+
+# playwright
+/pipeline/test-results/
+/pipeline/playwright-report/
+
+# build output
+*.tsbuildinfo
+/build/
+/dist/
+
+# env files — never commit real secrets or personal data
+.env
+.env.local
+.env*.local
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# vercel
+.vercel
